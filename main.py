@@ -40,11 +40,16 @@ def log_request_info():
 
 @app.route('/led-delay', methods=['POST'])
 def led_delay():
-    run_time = time.time() + 5 * 60
+    run_time = time.time() + 30
     sched.add_job(trigger_led, 'date', run_date=time.strftime(
         '%Y-%m-%d %H:%M:%S', time.localtime(run_time)))
     app.logger.info("Agendado acendimento para daqui 5 minutos")
     return jsonify({"scheduled_in": "5 minutes"})
+
+@app.route('/led-instant', methods=['POST'])
+def led_instant():
+    trigger_led()
+    return jsonify({"led": "on"})
 
 @app.route('/')
 def home():
