@@ -9,9 +9,6 @@ app.logger.setLevel(logging.DEBUG)
 sched = BackgroundScheduler(daemon=True)
 sched.start()
 
-mqtt_client = mqtt.Client()
-mqtt_client.enable_logger()
-
 # MQTT HiveMQ Cloud
 BROKER = "40ee48e1dc244790b777f0d2e77cc32e.s1.eu.hivemq.cloud"
 PORT = 8883
@@ -23,6 +20,7 @@ def trigger_led():
     app.logger.info("Função iniciada")
     try:
         client = mqtt.Client()
+        client.enable_logger()
         client.username_pw_set(USER, PASS)
         client.tls_set()
         client.connect(BROKER, PORT)
