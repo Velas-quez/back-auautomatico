@@ -17,18 +17,19 @@ PASS = "?EW!oU*kj1ry7@0xSR8C"
 TOPIC = "casa/comando/led"
 
 def trigger_led():
-    app.logger.info("Função iniciada")
-    try:
-        client = mqtt.Client()
-        client.enable_logger()
-        client.username_pw_set(USER, PASS)
-        client.tls_set()
-        client.connect(BROKER, PORT)
-        client.publish(TOPIC, "ON", qos=1)
-        client.disconnect()
-        app.logger.info("Função concluída com sucesso")
-    except Exception as e:
-        app.logger.error("Erro em trigger_led: %s", e, exc_info=True)
+    client = mqtt.Client()
+    client.username_pw_set(USER, PASS)
+    client.tls_set()
+    client.connect(BROKER, PORT)
+    client.loop_start()
+
+    result = client.publish(TOPIC, "ON", qos=1)
+
+    result.wait_for_publish()
+    time.sleep(0.1)
+
+    client.loop_stop()
+    client.disconnect()
 
 
 @app.before_request
