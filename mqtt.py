@@ -28,7 +28,7 @@ def send_mqtt(device_code, topic, message, qos = 1):
     
     return result
 
-def send_recieve_mqtt(device_code, topic, message, qos=1, timeout=5):
+def send_recieve_mqtt(device_code, topic, message, qos=1, timeout=120):
     client = mqtt.Client()
     client.username_pw_set(USER, PASS)
     client.tls_set()
