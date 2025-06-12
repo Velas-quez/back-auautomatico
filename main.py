@@ -1,35 +1,13 @@
 from flask import Flask, request, jsonify
 from apscheduler.schedulers.background import BackgroundScheduler
-import time
-import paho.mqtt.client as mqtt
 import logging
+
+from feed import feed_instant
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 sched = BackgroundScheduler(daemon=True)
 sched.start()
-
-# MQTT HiveMQ Cloud
-BROKER = "40ee48e1dc244790b777f0d2e77cc32e.s1.eu.hivemq.cloud"
-PORT = 8883
-USER = "hivemq.webclient.1749645042519"
-PASS = "?EW!oU*kj1ry7@0xSR8C"
-TOPIC = "casa/comando/led"
-
-def trigger_led():
-    client = mqtt.Client()
-    client.username_pw_set(USER, PASS)
-    client.tls_set()
-    client.connect(BROKER, PORT)
-    client.loop_start()
-
-    result = client.publish(TOPIC, "ON", qos=1)
-
-    result.wait_for_publish()
-    time.sleep(0.1)
-
-    client.loop_stop()
-    client.disconnect()
 
 
 @app.before_request
@@ -37,22 +15,63 @@ def log_request_info():
     app.logger.debug("Request headers: %s", request.headers)
     app.logger.debug("Request body: %s", request.get_data())
 
-@app.route('/led-delay', methods=['POST'])
-def led_delay():
-    run_time = time.time() + 30
-    sched.add_job(trigger_led, 'date', run_date=time.strftime(
-        '%Y-%m-%d %H:%M:%S', time.localtime(run_time)))
-    app.logger.info("Agendado acendimento para daqui 5 minutos")
-    return jsonify({"scheduled_in": "5 minutes"})
 
-@app.route('/led-instant', methods=['POST'])
-def led_instant():
-    trigger_led()
-    return jsonify({"led": "on"})
+# FEED INSTANT
+@app.route('/feed-instant', methods=['POST'])
+def feed_instant_route():
+    data = request.get_json(silent=True)
+    if not data:
+        return jsonify({"error": "JSON inválido ou ausente"}), 400
 
+    device_code = data.get('device_code')
+    portion = data.get('portion')
+    if not device_code or portion is None:
+        return jsonify({"error": "Parâmetros faltando"}), 400
+
+    result = feed_instant(device_code, portion)
+
+    return jsonify({"result": result}), 200
+
+
+# INSPECT LEVELS
+@app.route('/inspect-level/pot', methods=['GET'])
+def inspect_pot_level_route():
+    return "Not implemented"
+
+
+# SCHEDULE SINGLE
+@app.route('/independent-schedules', methods=['GET'])
+def get_independent_schedule_route():
+    return "Not implemented"
+
+@app.route('/independent-schedules/create', methods=['POST'])
+def create_independent_schedule_route():
+    return "Not implemented"
+
+@app.route('/independent-schedules/delete', methods=['DELETE'])
+def delete_independent_schedule_route():
+    return "Not implemented"
+
+
+# SCHEDULE RECURRENT
+@app.route('/recurrent_schedule', methods=['GET'])
+def get_recurrent_schedule_route():
+    return "Not implemented"
+
+@app.route('/recurrent_schedule/set', methods=['POST'])
+def set_recurrent_schedule_route():
+    return "Not implemented"
+
+@app.route('/recurrent_schedule/delete', methods=['DELETE'])
+def delete_recurrent_schedule_route():
+    return "Not implemented"
+
+# HOME
 @app.route('/')
 def home():
-    return "Backend Flask MQTT ativo!"
+    return "AuAu!"
+
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
