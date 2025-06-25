@@ -53,7 +53,7 @@ def send_recieve_mqtt(device_code, topic, message, qos=1, timeout=120):
     client.connect(BROKER, PORT)
     client.loop_start()
     
-    full_topic = f"{device_code}/command/{topic}"
+    full_topic = f"{device_code}/request/{topic}"
     client.publish(full_topic, message, qos=qos)
     
     received = event.wait(timeout=timeout)

@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 
@@ -7,6 +8,7 @@ from level_inspect import get_pot_level, get_reservatory_level
 from schedule_feed import create_independent_schedule, delete_independent_schedule, delete_recurrent_schedule, get_independent_schedules, get_recurrent_schedule, set_recurrent_schedule
 
 app = Flask(__name__)
+CORS(app,supports_credentials=True)
 app.logger.setLevel(logging.DEBUG)
 sched = BackgroundScheduler(daemon=True)
 sched.start()
