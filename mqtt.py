@@ -18,7 +18,7 @@ def send_mqtt(device_code, topic, message, qos = 1):
     client.connect(BROKER, PORT)
     client.loop_start()
 
-    result = client.publish(device_code+"/"+topic, message, qos)
+    result = client.publish(f"{device_code}/request/{topic}", message, qos)
 
     result.wait_for_publish()
     time.sleep(0.1)
