@@ -43,89 +43,85 @@ def inspect_pot_level_route():
     device_code = request.args.get('device_code')
     if not device_code:
         return jsonify({"error": "Parâmetro de rota 'device_code' faltando"}), 400
-    return get_pot_level(device_code)
+    result = get_pot_level(device_code)
+    return jsonify(result), 200
 
 @app.route('/inspect-level/reservatory', methods=['GET'])
 def inspect_reservatory_level_route():
     device_code = request.args.get('device_code')
     if not device_code:
         return jsonify({"error": "Parâmetro de rota 'device_code' faltando"}), 400
-    return get_reservatory_level(device_code), 200
+    result = get_reservatory_level(device_code)
+    return jsonify(result), 200
 
 
 # SCHEDULE SINGLE
 @app.route('/independent-schedules', methods=['GET'])
 def get_independent_schedule_route():
-    
     device_code = request.args.get('device_code')
     if not device_code:
         return jsonify({"error": "Parâmetro de rota 'device_code' faltando"}), 400
-    
-    return get_independent_schedules(device_code), 200
+    result = get_independent_schedules(device_code)
+    return jsonify(result), 200
 
 @app.route('/independent-schedules/create', methods=['POST'])
 def create_independent_schedule_route():
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "JSON inválido ou ausente"}), 400
-
     day = data.get('day')
     times = data.get('times')
-    device_code = data.get('times')
-    if not device_code or day or times is None:
+    device_code = data.get('device_code')
+    if not device_code or day is None or times is None:
         return jsonify({"error": "Parâmetros faltando"}), 400
-    
-    return create_independent_schedule(device_code, day, times), 200
+    result = create_independent_schedule(device_code, day, times)
+    return jsonify(result), 200
 
 @app.route('/independent-schedules/delete', methods=['DELETE'])
 def delete_independent_schedule_route():
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "JSON inválido ou ausente"}), 400
-    
     device_code = data.get('device_code')
     schedule_id = data.get('schedule_id')
     if not device_code or schedule_id is None:
         return jsonify({"error": "Parâmetros faltando"}), 400
-    
-    return delete_independent_schedule(device_code, schedule_id), 200
+    result = delete_independent_schedule(device_code, schedule_id)
+    return jsonify(result), 200
 
 
 # SCHEDULE RECURRENT
 @app.route('/recurrent_schedule', methods=['GET'])
 def get_recurrent_schedule_route():
-    
     device_code = request.args.get('device_code')
     if not device_code:
         return jsonify({"error": "Parâmetro de rota 'device_code' faltando"}), 400
-    
-    return get_recurrent_schedule(device_code), 200
+    result = get_recurrent_schedule(device_code)
+    return jsonify(result), 200
 
 @app.route('/recurrent_schedule/set', methods=['POST'])
 def set_recurrent_schedule_route():
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "JSON inválido ou ausente"}), 400
-
     frequency = data.get('frequency')
     times = data.get('times')
     device_code = data.get('device_code')
-    if not device_code or frequency or times is None:
+    if not device_code or frequency is None or times is None:
         return jsonify({"error": "Parâmetros faltando"}), 400
-    
-    return set_recurrent_schedule(device_code, times, frequency), 200
+    result = set_recurrent_schedule(device_code, times, frequency)
+    return jsonify(result), 200
 
 @app.route('/recurrent_schedule/delete', methods=['DELETE'])
 def delete_recurrent_schedule_route():
     data = request.get_json(silent=True)
     if not data:
         return jsonify({"error": "JSON inválido ou ausente"}), 400
-    
     device_code = data.get('device_code')
-    if not device_code is None:
+    if device_code is None:
         return jsonify({"error": "Parâmetros faltando"}), 400
-    
-    return delete_recurrent_schedule(device_code), 200
+    result = delete_recurrent_schedule(device_code)
+    return jsonify(result), 200
 
 # HOME
 @app.route('/')

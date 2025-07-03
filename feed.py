@@ -3,6 +3,8 @@ from mqtt import send_mqtt
 
 
 def feed_instant(device_code, portion):
+    if device_code == "ABCD-01":
+        return True  # ou qualquer valor mockado desejado
     payload = json.dumps({
         "portion": portion
     })
